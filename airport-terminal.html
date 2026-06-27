@@ -10,41 +10,6 @@
   .xp-frame {
     position: fixed; inset: 0; width: 100%; height: 100%; border: 0; display: block;
   }
-
-  /* top brand bar — non-blocking, only the link is clickable */
-  .topbar {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 10; pointer-events: none;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 18px 24px;
-    background: linear-gradient(180deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  }
-  .back {
-    pointer-events: auto; display: inline-flex; align-items: center; gap: 10px;
-    text-decoration: none; color: #F5F2EA; cursor: pointer;
-    border: 1px solid rgba(212,175,55,0.7); border-radius: 2px;
-    padding: 9px 16px; font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
-    background: rgba(0,0,0,0.35); backdrop-filter: blur(4px);
-    transition: background 0.25s ease, border-color 0.25s ease;
-  }
-  .back:hover { background: rgba(212,175,55,0.16); border-color: #D4AF37; }
-  .back .arrow { color: #D4AF37; font-size: 14px; line-height: 1; }
-
-  .wordmark {
-    text-align: right; line-height: 1.4;
-  }
-  .wordmark .name {
-    font-size: 12px; letter-spacing: 0.4em; text-transform: uppercase;
-    color: #F5F2EA; padding-left: 0.4em;
-  }
-  .wordmark .page {
-    font-size: 10px; letter-spacing: 0.32em; text-transform: uppercase;
-    color: #D4AF37; opacity: 0.9; padding-left: 0.32em;
-  }
-
-  @media (max-width: 560px) {
-    .wordmark { display: none; }
-  }
 </style>
 </head>
 <body>
@@ -55,14 +20,6 @@
   allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; microphone; camera; display-capture; xr-spatial-tracking; xr;"
   allowfullscreen
 ></iframe>
-
-<div class="topbar">
-  <a class="back" href="index.html"><span class="arrow">&larr;</span> Global Measures</a>
-  <div class="wordmark">
-    <div class="name">Global Measures</div>
-    <div class="page">Airport Terminal</div>
-  </div>
-</div>
 
 </body>
 </html>
