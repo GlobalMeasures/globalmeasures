@@ -14,16 +14,20 @@ html, body {
   font-family: Arial, sans-serif;
   color: #F5F2EA;
 }
-
+  
 /* Atmosphere layer */
 .globe {
   position: absolute;
-  width: 120vw;
-  height: 120vh;
-  top: -10vh;
-  left: -10vw;
-  background: radial-gradient(circle at center, rgba(200,168,107,0.10), transparent 60%);
-  animation: drift 22s ease-in-out infinite;
+  width: 140vw;
+  height: 140vh;
+  top: -20vh;
+  left: -20vw;
+  background:
+    radial-gradient(circle at center, rgba(200,168,107,0.12), transparent 55%),
+    radial-gradient(circle at 30% 40%, rgba(255,255,255,0.03), transparent 60%),
+    radial-gradient(circle at 70% 60%, rgba(200,168,107,0.05), transparent 65%);
+  animation: drift 28s ease-in-out infinite;
+  filter: blur(0.2px);
 }
 
 @keyframes drift {
@@ -124,6 +128,7 @@ h3 {
 <body>
 
 <div class="globe"></div>
+<div class="grid"></div>
 
 <div class="center" id="content">
 
@@ -145,7 +150,6 @@ h3 {
 </div>
 
 <script>
-// TIMED REVEAL SYSTEM
 window.onload = () => {
 
   setTimeout(() => document.getElementById("t1").style.opacity = 1, 400);
