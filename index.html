@@ -6,10 +6,6 @@
 <title>Global Measures</title>
 
 <style>
-
-/* =========================
-   GLOBAL RESET (IMPORTANT)
-========================= */
 html, body {
   margin: 0;
   padding: 0;
@@ -20,23 +16,17 @@ html, body {
   font-family: Arial, sans-serif;
 }
 
-/* prevent canvas border artifacts */
 canvas {
   display: block;
 }
 
-/* =========================
-   3D SCENE WRAPPER
-========================= */
 #scene-container {
   position: fixed;
   inset: 0;
   background: #000000;
 }
 
-/* =========================
-   CENTER UI OVERLAY
-========================= */
+/* CENTER TEXT */
 .overlay {
   position: fixed;
   inset: 0;
@@ -50,21 +40,14 @@ canvas {
   color: #F5F2EA;
 }
 
-/* =========================
-   TITLE (WIDE / LUXURY)
-========================= */
 h1 {
   margin: 0;
   font-weight: 300;
   letter-spacing: 0.45em;
   font-size: 52px;
   text-transform: uppercase;
-  color: rgba(245,242,234,0.95);
 }
 
-/* =========================
-   SUBTITLE (UPDATED COPY)
-========================= */
 .sub {
   margin-top: 14px;
   font-size: 15px;
@@ -79,16 +62,13 @@ h1 {
 
 <body>
 
-<!-- 3D CANVAS -->
 <div id="scene-container"></div>
 
-<!-- UI -->
 <div class="overlay">
   <h1>GLOBAL MEASURES</h1>
   <div class="sub">Immersive Gateway To Authentic Experiences</div>
 </div>
 
-<!-- THREE.JS -->
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 
 <script>
@@ -99,9 +79,6 @@ let globe, dotsGroup;
 init();
 animate();
 
-/* =========================
-   INIT SCENE
-========================= */
 function init() {
 
   scene = new THREE.Scene();
@@ -122,34 +99,30 @@ function init() {
 
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setClearColor(0x000000, 1);
-
   document.getElementById("scene-container").appendChild(renderer.domElement);
 
-  /* =========================
-     LIGHTING (GOLD TONE)
-  ========================= */
+  /* LIGHT */
   const light = new THREE.PointLight(0xd4af37, 2.2);
   light.position.set(5, 3, 5);
   scene.add(light);
 
-  /* =========================
-     GLOBE
-  ========================= */
+  /* 🌍 REAL EARTH TEXTURE (KEY UPGRADE) */
   const geometry = new THREE.SphereGeometry(1, 64, 64);
 
+  const texture = new THREE.TextureLoader().load(
+    "https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-dark.jpg"
+  );
+
   const material = new THREE.MeshStandardMaterial({
-    color: 0xd4af37,
-    roughness: 0.55,
-    metalness: 0.45,
-    wireframe: false
+    map: texture,
+    roughness: 0.9,
+    metalness: 0.1
   });
 
   globe = new THREE.Mesh(geometry, material);
   scene.add(globe);
 
-  /* =========================
-     DESTINATION DOTS (ATTACHED)
-  ========================= */
+  /* DOTS (DESTINATIONS) */
   dotsGroup = new THREE.Group();
 
   const dotsGeometry = new THREE.BufferGeometry();
@@ -176,7 +149,7 @@ function init() {
 
   const dotsMaterial = new THREE.PointsMaterial({
     color: 0xd4af37,
-    size: 0.03
+    size: 0.02
   });
 
   const dots = new THREE.Points(dotsGeometry, dotsMaterial);
@@ -184,9 +157,6 @@ function init() {
   dotsGroup.add(dots);
   scene.add(dotsGroup);
 
-  /* =========================
-     RESIZE HANDLER
-  ========================= */
   window.addEventListener("resize", onResize);
 }
 
@@ -196,17 +166,14 @@ function onResize() {
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-/* =========================
-   ANIMATION LOOP
-========================= */
 function animate() {
   requestAnimationFrame(animate);
 
-  globe.rotation.y += 0.002;
-  globe.rotation.x += 0.0003;
+  globe.rotation.y += 0.0018;
+  dotsGroup.rotation.y += 0.0018;
 
-  dotsGroup.rotation.y += 0.002;
-  dotsGroup.rotation.x += 0.0003;
+  globe.rotation.x += 0.0002;
+  dotsGroup.rotation.x += 0.0002;
 
   renderer.render(scene, camera);
 }
