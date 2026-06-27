@@ -18,18 +18,20 @@
     justify-content: center; align-items: center; text-align: center; padding: 0 24px;
   }
   h1 {
-    margin: 0; font-weight: 200; letter-spacing: 0.45em; font-size: 54px;
-    text-transform: uppercase; padding-left: 0.45em;
+    margin: 0; font-weight: 200; letter-spacing: clamp(0.1em, 2.4vw, 0.45em);
+    font-size: clamp(28px, 9vw, 54px);
+    text-transform: uppercase; padding-left: clamp(0.1em, 2.4vw, 0.45em);
   }
   .sub {
-    margin-top: 20px; font-size: 14px; letter-spacing: 0.22em;
+    margin-top: clamp(12px, 2.5vw, 20px); font-size: clamp(10px, 2.6vw, 14px);
+    letter-spacing: clamp(0.12em, 2vw, 0.22em);
     text-transform: uppercase; color: #D4AF37; opacity: 0.92;
   }
   .cta {
-    margin-top: 30px; pointer-events: auto; cursor: pointer; background: transparent;
+    margin-top: clamp(20px, 4vw, 30px); pointer-events: auto; cursor: pointer; background: transparent;
     border: 1px solid rgba(212,175,55,0.7); color: #F5F2EA; font-family: inherit;
-    font-size: 11px; letter-spacing: 0.26em; text-transform: uppercase;
-    padding: 11px 22px; border-radius: 2px; text-decoration: none; display: inline-block;
+    font-size: clamp(9px, 2.2vw, 11px); letter-spacing: clamp(0.18em, 2.2vw, 0.26em); text-transform: uppercase;
+    padding: clamp(9px, 2.2vw, 11px) clamp(16px, 4vw, 22px); border-radius: 2px; text-decoration: none; display: inline-block;
     transition: background 0.25s ease, border-color 0.25s ease;
   }
   .cta:hover { background: rgba(212,175,55,0.14); border-color: #D4AF37; }
@@ -39,8 +41,8 @@
     display: flex; justify-content: center;
   }
   .readout span {
-    font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 11px;
-    letter-spacing: 0.28em; text-transform: uppercase; color: rgba(212,175,55,0.85);
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: clamp(8px, 2vw, 11px);
+    letter-spacing: clamp(0.18em, 2vw, 0.28em); text-transform: uppercase; color: rgba(212,175,55,0.85);
   }
 </style>
 </head>
@@ -220,12 +222,15 @@ routes.forEach((rt, i) => {
   pulses.push({ curve, spr: p, offset: i / routes.length });
 });
 
-window.addEventListener("resize", () => {
+function fitCamera() {
   const w = host.clientWidth, h = host.clientHeight;
   camera.aspect = w / h;
+  camera.position.z = w < 600 ? 3.7 : (w < 900 ? 3.15 : 2.75);
   camera.updateProjectionMatrix();
   renderer.setSize(w, h);
-});
+}
+window.addEventListener("resize", fitCamera);
+fitCamera();
 
 let lastFront = -1;
 const tmp = new THREE.Vector3();
