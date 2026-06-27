@@ -6,7 +6,6 @@
 <title>Global Measures</title>
 
 <style>
-<style>
 html, body {
   margin: 0;
   height: 100%;
@@ -16,7 +15,7 @@ html, body {
   color: #F5F2EA;
 }
 
-/* ===== LIGHT FIELD BACKGROUND (KEY DIFFERENCE) ===== */
+/* ===== CINEMATIC LIGHT FIELD ===== */
 body::before {
   content: "";
   position: fixed;
@@ -26,21 +25,21 @@ body::before {
     radial-gradient(circle at 50% 55%, rgba(255, 255, 255, 0.04), transparent 60%),
     radial-gradient(circle at 20% 40%, rgba(255, 255, 255, 0.02), transparent 50%),
     radial-gradient(circle at 80% 60%, rgba(255, 214, 170, 0.05), transparent 55%);
-  filter: blur(40px);
+  filter: blur(45px);
   opacity: 1;
   z-index: 0;
 }
 
-/* subtle vignette like cinema */
+/* CINEMA VIGNETTE */
 body::after {
   content: "";
   position: fixed;
   inset: 0;
-  background: radial-gradient(circle, transparent 40%, rgba(0,0,0,0.75) 100%);
+  background: radial-gradient(circle, transparent 40%, rgba(0,0,0,0.78) 100%);
   z-index: 1;
 }
 
-/* ===== MAIN LAYOUT ===== */
+/* ===== CENTER LAYOUT ===== */
 .center {
   position: absolute;
   width: 100%;
@@ -50,7 +49,7 @@ body::after {
   z-index: 10;
 }
 
-/* ===== TYPOGRAPHY (APPLE-LIKE WEIGHT SYSTEM) ===== */
+/* ===== TYPOGRAPHY ===== */
 h1 {
   font-size: 44px;
   letter-spacing: 0.35em;
@@ -79,7 +78,7 @@ h3 {
   transition: 1.2s ease;
 }
 
-/* ===== BOARDING PASS (MATERIAL SURFACE) ===== */
+/* ===== BOARDING PASS CARD ===== */
 .card {
   margin: 60px auto 0;
   width: 340px;
@@ -113,7 +112,7 @@ h3 {
   border-color: rgba(255, 214, 170, 0.6);
 }
 
-/* button */
+/* BUTTON */
 .button {
   margin-top: 16px;
   padding: 12px;
@@ -129,7 +128,7 @@ h3 {
   background: rgba(255, 214, 170, 0.06);
 }
 
-/* ===== FOOTER ===== */
+/* FOOTER */
 .footer {
   position: absolute;
   bottom: 18px;
@@ -141,7 +140,7 @@ h3 {
   transition: 1.5s ease;
 }
 
-/* ===== TRANSITION ===== */
+/* EXIT ANIMATION */
 .fade-out {
   animation: fadeOut 2.2s forwards;
 }
@@ -151,121 +150,9 @@ h3 {
   100% { opacity: 0; transform: scale(1.02); }
 }
 </style>
-}
-/* GRID LAYER */
-.grid {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background-image:
-    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-  background-size: 90px 90px;
-  opacity: 0.12;
-  pointer-events: none;
-  z-index: 1;
-}
-
-/* ATMOSPHERE */
-.globe {
-  position: fixed;
-  inset: 0;
-  background:
-    radial-gradient(circle at 50% 50%, rgba(200,168,107,0.35), transparent 40%),
-    radial-gradient(circle at 50% 50%, rgba(255,255,255,0.06), transparent 55%),
-    radial-gradient(circle at 50% 50%, rgba(200,168,107,0.08), transparent 70%);
-  animation: drift 20s ease-in-out infinite;
-  filter: blur(0px);
-  z-index: 0;
-}
-@keyframes drift {
-  0%,100% { transform: scale(1) rotate(0deg); }
-  50% { transform: scale(1.12) rotate(10deg); }
-}
-
-/* CENTER CONTENT */
-.center {
-  position: absolute;
-  width: 100%;
-  top: 45%;
-  transform: translateY(-50%);
-  text-align: center;
-  z-index: 5;
-}
-
-/* TEXT ANIMATION */
-h1, h2, h3 {
-  opacity: 0;
-  transform: translateY(10px);
-  transition: all 1s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-h1 { font-size: 42px; letter-spacing: 6px; }
-h2 { font-weight: 300; font-size: 14px; letter-spacing: 2px; }
-h3 { font-weight: 300; font-size: 12px; opacity: 0.7; }
-
-/* CARD */
-.card {
-  margin: 50px auto 0;
-  width: 320px;
-  padding: 20px;
-  border: 1px solid rgba(200,168,107,0.4);
-  border-radius: 10px;
-  background: rgba(0,0,0,0.4);
-  backdrop-filter: blur(10px);
-  cursor: pointer;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: all 1s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.card.active {
-  opacity: 1;
-  transform: translateY(0px);
-}
-
-.card:hover {
-  border-color: rgba(200,168,107,0.9);
-  transform: translateY(-3px);
-}
-
-.button {
-  margin-top: 15px;
-  padding: 10px;
-  border: 1px solid #C8A86B;
-  text-align: center;
-  letter-spacing: 2px;
-  font-size: 12px;
-}
-
-/* FOOTER */
-.footer {
-  position: absolute;
-  bottom: 20px;
-  width: 100%;
-  text-align: center;
-  font-size: 11px;
-  opacity: 0;
-  transition: opacity 1.5s ease;
-  z-index: 6;
-}
-
-/* FADE OUT */
-.fade-out {
-  animation: fadeOut 2.5s forwards;
-}
-
-@keyframes fadeOut {
-  0% { opacity: 1; transform: scale(1); }
-  100% { opacity: 0; transform: scale(1.05); }
-}
-</style>
 </head>
 
 <body>
-
-<div class="globe"></div>
-<div class="grid"></div>
 
 <div class="center" id="content">
 
@@ -302,22 +189,22 @@ window.onload = () => {
   setTimeout(() => {
     document.getElementById("t3").style.opacity = 1;
     document.getElementById("t3").style.transform = "translateY(0)";
-  }, 2200);
+  }, 2000);
 
   setTimeout(() => {
     document.getElementById("card").classList.add("active");
-  }, 3200);
+  }, 2800);
 
   setTimeout(() => {
     document.getElementById("footer").style.opacity = 0.7;
-  }, 4200);
+  }, 3600);
 };
 
 function enter() {
   const content = document.getElementById("content");
   const card = document.getElementById("card");
 
-  card.style.borderColor = "#C8A86B";
+  card.style.borderColor = "rgba(255, 214, 170, 0.8)";
 
   setTimeout(() => {
     content.classList.add("fade-out");
@@ -325,7 +212,7 @@ function enter() {
 
   setTimeout(() => {
     window.location.href = "https://YOUR-IMMERSIVE-URL-HERE";
-  }, 2200);
+  }, 2000);
 }
 </script>
 
