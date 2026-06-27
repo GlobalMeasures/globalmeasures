@@ -6,6 +6,10 @@
 <title>Global Measures</title>
 
 <style>
+
+/* =========================
+   GLOBAL RESET (IMPORTANT)
+========================= */
 html, body {
   margin: 0;
   padding: 0;
@@ -16,12 +20,13 @@ html, body {
   font-family: Arial, sans-serif;
 }
 
+/* prevent canvas border artifacts */
 canvas {
   display: block;
 }
 
 /* =========================
-   SCENE
+   3D SCENE WRAPPER
 ========================= */
 #scene-container {
   position: fixed;
@@ -30,7 +35,7 @@ canvas {
 }
 
 /* =========================
-   TEXT OVERLAY (IMPROVED)
+   CENTER UI OVERLAY
 ========================= */
 .overlay {
   position: fixed;
@@ -41,23 +46,20 @@ canvas {
   align-items: center;
   text-align: center;
   z-index: 10;
-  color: #F5F2EA;
   pointer-events: none;
+  color: #F5F2EA;
 }
 
 /* =========================
-   MAIN TITLE (WIDER / LUXURY FEEL)
+   TITLE (WIDE / LUXURY)
 ========================= */
 h1 {
   margin: 0;
   font-weight: 300;
-  letter-spacing: 0.45em;   /* MUCH WIDER */
+  letter-spacing: 0.45em;
   font-size: 52px;
   text-transform: uppercase;
-  opacity: 0.95;
-
-  /* subtle glow for depth */
-  text-shadow: 0 0 20px rgba(212,175,55,0.15);
+  color: rgba(245,242,234,0.95);
 }
 
 /* =========================
@@ -72,26 +74,34 @@ h1 {
   line-height: 1.6;
 }
 </style>
+
 </head>
 
 <body>
 
+<!-- 3D CANVAS -->
 <div id="scene-container"></div>
 
+<!-- UI -->
 <div class="overlay">
   <h1>GLOBAL MEASURES</h1>
   <div class="sub">Immersive Gateway To Authentic Experiences</div>
 </div>
 
+<!-- THREE.JS -->
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 
 <script>
+
 let scene, camera, renderer;
 let globe, dotsGroup;
 
 init();
 animate();
 
+/* =========================
+   INIT SCENE
+========================= */
 function init() {
 
   scene = new THREE.Scene();
@@ -102,33 +112,48 @@ function init() {
     0.1,
     1000
   );
+
   camera.position.z = 3;
 
-  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer = new THREE.WebGLRenderer({
+    antialias: true,
+    alpha: false
+  });
+
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setClearColor(0x000000, 1);
+
   document.getElementById("scene-container").appendChild(renderer.domElement);
 
-  const light = new THREE.PointLight(0xd4af37, 2);
+  /* =========================
+     LIGHTING (GOLD TONE)
+  ========================= */
+  const light = new THREE.PointLight(0xd4af37, 2.2);
   light.position.set(5, 3, 5);
   scene.add(light);
 
+  /* =========================
+     GLOBE
+  ========================= */
   const geometry = new THREE.SphereGeometry(1, 64, 64);
 
   const material = new THREE.MeshStandardMaterial({
     color: 0xd4af37,
-    roughness: 0.6,
-    metalness: 0.4,
+    roughness: 0.55,
+    metalness: 0.45,
     wireframe: false
   });
 
   globe = new THREE.Mesh(geometry, material);
   scene.add(globe);
 
+  /* =========================
+     DESTINATION DOTS (ATTACHED)
+  ========================= */
   dotsGroup = new THREE.Group();
 
   const dotsGeometry = new THREE.BufferGeometry();
-  const dotsCount = 250;
+  const dotsCount = 300;
 
   const positions = [];
 
@@ -145,7 +170,7 @@ function init() {
   }
 
   dotsGeometry.setAttribute(
-    'position',
+    "position",
     new THREE.Float32BufferAttribute(positions, 3)
   );
 
@@ -159,6 +184,9 @@ function init() {
   dotsGroup.add(dots);
   scene.add(dotsGroup);
 
+  /* =========================
+     RESIZE HANDLER
+  ========================= */
   window.addEventListener("resize", onResize);
 }
 
@@ -168,6 +196,9 @@ function onResize() {
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
+/* =========================
+   ANIMATION LOOP
+========================= */
 function animate() {
   requestAnimationFrame(animate);
 
@@ -179,6 +210,7 @@ function animate() {
 
   renderer.render(scene, camera);
 }
+
 </script>
 
 </body>
