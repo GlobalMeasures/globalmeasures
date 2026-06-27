@@ -6,26 +6,41 @@
 <title>Global Measures</title>
 
 <style>
-<style>
+/* =========================
+   GLOBAL RESET (CRITICAL)
+========================= */
 html, body {
   margin: 0;
+  padding: 0;
+  width: 100%;
   height: 100%;
   overflow: hidden;
-  background: #000000; /* TRUE BLACK FIX */
+  background: #000000;
   font-family: Arial, sans-serif;
 }
 
-/* ensure canvas also stays black behind WebGL */
+/* prevents any canvas gaps */
+canvas {
+  display: block;
+}
+
+/* =========================
+   SCENE CONTAINER
+========================= */
 #scene-container {
-  position: absolute;
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   background: #000000;
 }
 
-/* CENTER OVERLAY */
+/* =========================
+   CENTER UI OVERLAY
+========================= */
 .overlay {
-  position: absolute;
+  position: fixed;
   inset: 0;
   display: flex;
   flex-direction: column;
@@ -38,9 +53,9 @@ html, body {
 }
 
 h1 {
-  letter-spacing: 10px;
-  font-weight: 400;
   margin: 0;
+  font-weight: 400;
+  letter-spacing: 10px;
 }
 
 .sub {
@@ -53,13 +68,16 @@ h1 {
 
 <body>
 
+<!-- 3D SCENE -->
 <div id="scene-container"></div>
 
+<!-- UI -->
 <div class="overlay">
   <h1>GLOBAL MEASURES</h1>
   <div class="sub">Immersive global food & drink experiences</div>
 </div>
 
+<!-- THREE.JS -->
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 
 <script>
@@ -81,29 +99,38 @@ function init() {
   );
   camera.position.z = 3;
 
-  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer = new THREE.WebGLRenderer({
+    antialias: true,
+    alpha: true
+  });
+
   renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setClearColor(0x000000, 1); // HARD BLACK FIX
   document.getElementById("scene-container").appendChild(renderer.domElement);
 
-  // LIGHT (gold tone)
+  // LIGHT
   const light = new THREE.PointLight(0xd4af37, 2);
   light.position.set(5, 3, 5);
   scene.add(light);
 
-  // 🌍 GLOBE (NO WIREFRAME — FIXED)
+  // =========================
+  // GLOBE
+  // =========================
   const geometry = new THREE.SphereGeometry(1, 64, 64);
 
   const material = new THREE.MeshStandardMaterial({
     color: 0xd4af37,
     roughness: 0.6,
     metalness: 0.4,
-    wireframe: false   // IMPORTANT FIX
+    wireframe: false
   });
 
   globe = new THREE.Mesh(geometry, material);
   scene.add(globe);
 
-  // 📍 DOTS GROUP (THIS FIXES YOUR ROTATION ISSUE)
+  // =========================
+  // DOTS (ATTACHED TO GLOBE)
+  // =========================
   dotsGroup = new THREE.Group();
 
   const dotsGeometry = new THREE.BufferGeometry();
@@ -135,7 +162,6 @@ function init() {
 
   const dots = new THREE.Points(dotsGeometry, dotsMaterial);
 
-  // KEY FIX: attach dots to globe group
   dotsGroup.add(dots);
   scene.add(dotsGroup);
 
@@ -151,11 +177,10 @@ function onResize() {
 function animate() {
   requestAnimationFrame(animate);
 
-  // rotate BOTH together
   globe.rotation.y += 0.002;
-  dotsGroup.rotation.y += 0.002;
-
   globe.rotation.x += 0.0003;
+
+  dotsGroup.rotation.y += 0.002;
   dotsGroup.rotation.x += 0.0003;
 
   renderer.render(scene, camera);
