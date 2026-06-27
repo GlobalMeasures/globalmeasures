@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Global Measures</title>
+
+<style>
+html, body {
+  margin: 0;
+  height: 100%;
+  background: #050505;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+  color: #F5F2EA;
+}
+
+/* Atmosphere layer */
+.globe {
+  position: absolute;
+  width: 120vw;
+  height: 120vh;
+  top: -10vh;
+  left: -10vw;
+  background: radial-gradient(circle at center, rgba(200,168,107,0.10), transparent 60%);
+  animation: drift 22s ease-in-out infinite;
+}
+
+@keyframes drift {
+  0%,100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.12) rotate(10deg); }
+}
+
+/* Layout */
+.center {
+  position: absolute;
+  width: 100%;
+  top: 45%;
+  transform: translateY(-50%);
+  text-align: center;
+}
+
+/* Text states */
+h1, h2, h3, .sub, .tag {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+h1 {
+  font-size: 42px;
+  letter-spacing: 6px;
+}
+
+h2 {
+  font-weight: 300;
+  font-size: 14px;
+  letter-spacing: 2px;
+}
+
+h3 {
+  font-weight: 300;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* Boarding pass */
+.card {
+  margin: 50px auto 0;
+  width: 320px;
+  padding: 20px;
+  border: 1px solid rgba(200,168,107,0.4);
+  border-radius: 10px;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.card.active {
+  opacity: 1;
+  transform: translateY(0px);
+}
+
+.card:hover {
+  border-color: rgba(200,168,107,0.9);
+  transform: translateY(-3px);
+}
+
+.button {
+  margin-top: 15px;
+  padding: 10px;
+  border: 1px solid #C8A86B;
+  text-align: center;
+  letter-spacing: 2px;
+  font-size: 12px;
+}
+
+/* Footer trust layer */
+.footer {
+  position: absolute;
+  bottom: 20px;
+  width: 100%;
+  text-align: center;
+  font-size: 11px;
+  opacity: 0;
+  transition: opacity 1.5s ease;
+}
+
+/* Transition */
+.fade-out {
+  animation: fadeOut 2.5s forwards;
+}
+
+@keyframes fadeOut {
+  0% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.05); }
+}
+</style>
+</head>
+
+<body>
+
+<div class="globe"></div>
+
+<div class="center" id="content">
+
+  <h1 id="t1">GLOBAL MEASURES</h1>
+  <h2 id="t2">Immersive guide to global food & drink experiences</h2>
+  <h3 id="t3">Leave algorithms behind. Enter curated reality.</h3>
+
+  <div class="card" id="card" onclick="enter()">
+    <div style="font-size:12px; opacity:0.7;">BOARDING PASS</div>
+    <div style="margin-top:10px;">BEGIN YOUR JOURNEY</div>
+    <div style="margin-top:10px; font-size:11px; opacity:0.6;">Gate GM-01</div>
+    <div class="button">ENTER AIRPORT</div>
+  </div>
+
+</div>
+
+<div class="footer" id="footer">
+  21+ EXPERIENCE • EXPLORE RESPONSIBLY
+</div>
+
+<script>
+// TIMED REVEAL SYSTEM
+window.onload = () => {
+
+  setTimeout(() => document.getElementById("t1").style.opacity = 1, 400);
+  setTimeout(() => document.getElementById("t1").style.transform = "translateY(0)", 400);
+
+  setTimeout(() => document.getElementById("t2").style.opacity = 1, 1200);
+  setTimeout(() => document.getElementById("t2").style.transform = "translateY(0)", 1200);
+
+  setTimeout(() => document.getElementById("t3").style.opacity = 1, 2200);
+  setTimeout(() => document.getElementById("t3").style.transform = "translateY(0)", 2200);
+
+  setTimeout(() => {
+    document.getElementById("card").classList.add("active");
+  }, 3200);
+
+  setTimeout(() => {
+    document.getElementById("footer").style.opacity = 0.7;
+  }, 4200);
+};
+
+function enter() {
+  const content = document.getElementById("content");
+  const card = document.getElementById("card");
+
+  card.style.borderColor = "#C8A86B";
+
+  setTimeout(() => {
+    content.classList.add("fade-out");
+  }, 300);
+
+  setTimeout(() => {
+    window.location.href = "https://YOUR-IMMERSIVE-URL-HERE";
+  }, 2200);
+}
+</script>
+
+</body>
+</html>
