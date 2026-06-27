@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Global Measures</title>
+<style>
+  html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; }
+  #scene-container { position: fixed; inset: 0; background: #000; }
+  canvas { display: block; }
+
+  .overlay {
+    position: fixed; inset: 0; z-index: 10; pointer-events: none;
+    color: #F5F2EA; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
+  .center {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    justify-content: center; align-items: center; text-align: center; padding: 0 24px;
+  }
+  h1 {
+    margin: 0; font-weight: 200; letter-spacing: 0.45em; font-size: 54px;
+    text-transform: uppercase; padding-left: 0.45em;
+  }
+  .sub {
+    margin-top: 20px; font-size: 14px; letter-spacing: 0.22em;
+    text-transform: uppercase; color: #D4AF37; opacity: 0.92;
+  }
+  .cta {
+    margin-top: 30px; pointer-events: auto; cursor: pointer; background: transparent;
+    border: 1px solid rgba(212,175,55,0.7); color: #F5F2EA; font-family: inherit;
+    font-size: 11px; letter-spacing: 0.26em; text-transform: uppercase;
+    padding: 11px 22px; border-radius: 2px; text-decoration: none; display: inline-block;
+    transition: background 0.25s ease, border-color 0.25s ease;
+  }
+  .cta:hover { background: rgba(212,175,55,0.14); border-color: #D4AF37; }
+
+  .readout {
+    position: absolute; bottom: 40px; left: 0; right: 0;
+    display: flex; justify-content: center;
+  }
+  .readout span {
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 11px;
+    letter-spacing: 0.28em; text-transform: uppercase; color: rgba(212,175,55,0.85);
+  }
+</style>
+</head>
+<body>
+
+<div id="scene-container"></div>
+
+<div class="overlay">
+  <div class="center">
+    <h1>Global Measures</h1>
+    <div class="sub">Gateway to Authentic Experiences</div>
+    <a class="cta" href="airport-terminal.html">21+ Explore Responsibly</a>
+  </div>
+  <div class="readout"><span id="readout">Locating&hellip;</span></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const ACCENT = "#D4AF37";
+const ROTATION_SPEED = 1;
+const SHOW_ARCS = true;
+
+const host = document.getElementById("scene-container");
+const readoutEl = document.getElementById("readout");
+
+function llToVec(lat, lon, r) {
+  const phi = (90 - lat) * Math.PI / 180;
+  const theta = (lon + 180) * Math.PI / 180;
+  return new THREE.Vector3(
+    -(r * Math.sin(phi) * Math.cos(theta)),
+    r * Math.cos(phi),
+    r * Math.sin(phi) * Math.sin(theta)
+  );
+}
+
+function makeGlowTexture() {
+  const c = document.createElement("canvas");
+  c.width = c.height = 128;
+  const g = c.getContext("2d");
+  const grd = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+  grd.addColorStop(0, "rgba(255,255,255,1)");
+  grd.addColorStop(0.25, "rgba(255,255,255,0.55)");
+  grd.addColorStop(1, "rgba(255,255,255,0)");
+  g.fillStyle = grd;
+  g.fillRect(0, 0, 128, 128);
+  return new THREE.CanvasTexture(c);
+}
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(45, host.clientWidth / host.clientHeight, 0.1, 100);
+camera.position.z = 2.75;
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(host.clientWidth, host.clientHeight);
+renderer.setClearColor(0x000000, 1);
+host.appendChild(renderer.domElement);
+
+// lighting
+scene.add(new THREE.AmbientLight(0x223040, 1.1));
+const key = new THREE.PointLight(0xfff4d8, 2.0); key.position.set(5, 3, 5); scene.add(key);
+const rim = new THREE.PointLight(0xd4af37, 1.0); rim.position.set(-4, -2, -3); scene.add(rim);
+
+// earth
+const tex = new THREE.TextureLoader().load(
+  "https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-dark.jpg"
+);
+tex.anisotropy = 4;
+const earthMat = new THREE.MeshStandardMaterial({
+  map: tex, emissiveMap: tex, emissive: new THREE.Color(0xbfae7a),
+  emissiveIntensity: 0.55, roughness: 0.92, metalness: 0.05
+});
+const earth = new THREE.Mesh(new THREE.SphereGeometry(1, 64, 64), earthMat);
+
+const globe = new THREE.Group();
+globe.rotation.x = 0.34;
+globe.add(earth);
+scene.add(globe);
+
+// faint surface dot field
+const fieldPos = [];
+for (let i = 0; i < 900; i++) {
+  const u = Math.random(), v = Math.random();
+  const theta = 2 * Math.PI * u, phi = Math.acos(2 * v - 1);
+  const r = 1.004;
+  fieldPos.push(r * Math.sin(phi) * Math.cos(theta), r * Math.cos(phi), r * Math.sin(phi) * Math.sin(theta));
+}
+const fieldGeo = new THREE.BufferGeometry();
+fieldGeo.setAttribute("position", new THREE.Float32BufferAttribute(fieldPos, 3));
+globe.add(new THREE.Points(fieldGeo, new THREE.PointsMaterial({ color: 0x3a3f48, size: 0.01 })));
+
+// atmosphere
+const atmMat = new THREE.ShaderMaterial({
+  uniforms: { uColor: { value: new THREE.Color(ACCENT) } },
+  vertexShader: "varying vec3 vN; void main(){ vN = normalize(normalMatrix * normal); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }",
+  fragmentShader: "uniform vec3 uColor; varying vec3 vN; void main(){ float i = pow(0.62 - dot(vN, vec3(0.0,0.0,1.0)), 3.0); gl_FragColor = vec4(uColor, 1.0) * clamp(i,0.0,1.0); }",
+  blending: THREE.AdditiveBlending, side: THREE.BackSide, transparent: true, depthWrite: false
+});
+const atmosphere = new THREE.Mesh(new THREE.SphereGeometry(1, 48, 48), atmMat);
+atmosphere.scale.set(1.16, 1.16, 1.16);
+scene.add(atmosphere);
+
+// destinations
+const dests = [
+  // Europe
+  ["Paris", 48.85, 2.35], ["London", 51.51, -0.13], ["Rome", 41.90, 12.50],
+  ["Barcelona", 41.39, 2.17], ["Istanbul", 41.01, 28.98], ["Athens", 37.98, 23.73],
+  ["Amsterdam", 52.37, 4.90], ["Venice", 45.44, 12.32], ["Reykjavik", 64.15, -21.94],
+  ["Prague", 50.08, 14.44], ["Santorini", 36.39, 25.46],
+  // Asia
+  ["Tokyo", 35.68, 139.65], ["Kyoto", 35.01, 135.77], ["Bangkok", 13.76, 100.50],
+  ["Singapore", 1.35, 103.82], ["Dubai", 25.20, 55.27], ["Bali", -8.65, 115.22],
+  ["Hong Kong", 22.32, 114.17], ["Maldives", 4.18, 73.51], ["Mumbai", 19.08, 72.88],
+  ["Phuket", 7.88, 98.39], ["Jaipur", 26.91, 75.79],
+  // North America
+  ["New York", 40.71, -74.01], ["Las Vegas", 36.17, -115.14], ["Cancun", 21.16, -86.85],
+  ["Los Angeles", 34.05, -118.24], ["Miami", 25.76, -80.19], ["San Francisco", 37.77, -122.42],
+  ["Vancouver", 49.28, -123.12], ["Mexico City", 19.43, -99.13], ["Honolulu", 21.31, -157.86],
+  // South America
+  ["Rio de Janeiro", -22.91, -43.17], ["Buenos Aires", -34.60, -58.38], ["Cusco", -13.53, -71.97],
+  ["Lima", -12.05, -77.04], ["Cartagena", 10.39, -75.48], ["Santiago", -33.45, -70.67],
+  // Africa
+  ["Cape Town", -33.92, 18.42], ["Marrakech", 31.63, -7.99], ["Cairo", 30.04, 31.24],
+  ["Zanzibar", -6.17, 39.20], ["Nairobi", -1.29, 36.82], ["Victoria Falls", -17.92, 25.86],
+  // Oceania
+  ["Sydney", -33.87, 151.21], ["Auckland", -36.85, 174.76], ["Queenstown", -45.03, 168.66],
+  ["Bora Bora", -16.50, -151.74], ["Nadi", -17.78, 177.44]
+];
+
+const glow = makeGlowTexture();
+const markers = dests.map(d => {
+  const vec = llToVec(d[1], d[2], 1);
+  const dot = new THREE.Mesh(
+    new THREE.SphereGeometry(0.011, 12, 12),
+    new THREE.MeshBasicMaterial({ color: new THREE.Color(ACCENT) })
+  );
+  dot.position.copy(vec.clone().multiplyScalar(1.006));
+  globe.add(dot);
+  const sprMat = new THREE.SpriteMaterial({ map: glow, color: new THREE.Color(ACCENT), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, opacity: 0.9 });
+  const spr = new THREE.Sprite(sprMat);
+  spr.position.copy(vec.clone().multiplyScalar(1.02));
+  spr.scale.set(0.12, 0.12, 1);
+  globe.add(spr);
+  return { name: d[0], lat: d[1], lon: d[2], vec, dot, spr, phase: Math.random() * 6.28 };
+});
+
+// arcs
+const idx = n => dests.findIndex(d => d[0] === n);
+const routes = [
+  // round-the-world circuit
+  ["New York", "London"], ["London", "Paris"], ["Paris", "Rome"], ["Rome", "Istanbul"],
+  ["Istanbul", "Cairo"], ["Cairo", "Marrakech"], ["Marrakech", "Cape Town"],
+  ["Cairo", "Dubai"], ["Dubai", "Maldives"], ["Maldives", "Singapore"],
+  ["Singapore", "Bali"], ["Bali", "Sydney"], ["Sydney", "Auckland"],
+  ["Singapore", "Bangkok"], ["Bangkok", "Hong Kong"], ["Hong Kong", "Tokyo"],
+  ["Tokyo", "Honolulu"], ["Honolulu", "Los Angeles"], ["Los Angeles", "New York"],
+  // continental spurs
+  ["Reykjavik", "New York"], ["New York", "Miami"], ["Miami", "Cancun"], ["Cancun", "Cartagena"],
+  ["Cartagena", "Lima"], ["Lima", "Rio de Janeiro"], ["Rio de Janeiro", "Buenos Aires"],
+  ["Dubai", "Mumbai"], ["Nairobi", "Cairo"]
+];
+const arcsGroup = new THREE.Group();
+arcsGroup.visible = SHOW_ARCS;
+globe.add(arcsGroup);
+const pulses = [];
+routes.forEach((rt, i) => {
+  const a = markers[idx(rt[0])].vec, b = markers[idx(rt[1])].vec;
+  const dist = a.distanceTo(b);
+  const mid = a.clone().add(b).multiplyScalar(0.5).normalize().multiplyScalar(1 + 0.16 + dist * 0.22);
+  const curve = new THREE.QuadraticBezierCurve3(a.clone().multiplyScalar(1.005), mid, b.clone().multiplyScalar(1.005));
+  const mat = new THREE.MeshBasicMaterial({ color: new THREE.Color(ACCENT), transparent: true, opacity: 0.7 });
+  arcsGroup.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 64, 0.0032, 8, false), mat));
+  const pMat = new THREE.SpriteMaterial({ map: glow, color: new THREE.Color(0xfff0c4), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false });
+  const p = new THREE.Sprite(pMat);
+  p.scale.set(0.07, 0.07, 1);
+  arcsGroup.add(p);
+  pulses.push({ curve, spr: p, offset: i / routes.length });
+});
+
+window.addEventListener("resize", () => {
+  const w = host.clientWidth, h = host.clientHeight;
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+  renderer.setSize(w, h);
+});
+
+let lastFront = -1;
+const tmp = new THREE.Vector3();
+const clock = new THREE.Clock();
+
+function animate() {
+  requestAnimationFrame(animate);
+  const t = clock.getElapsedTime();
+  globe.rotation.y += 0.0016 * ROTATION_SPEED;
+
+  markers.forEach(m => {
+    const s = 0.10 + 0.035 * (0.5 + 0.5 * Math.sin(t * 2.0 + m.phase));
+    m.spr.scale.set(s, s, 1);
+  });
+  pulses.forEach(p => {
+    const tt = (t * 0.12 * ROTATION_SPEED + p.offset) % 1;
+    p.curve.getPoint(tt, tmp);
+    p.spr.position.copy(tmp);
+  });
+
+  let best = -1, bestZ = 0.45;
+  for (let i = 0; i < markers.length; i++) {
+    markers[i].dot.getWorldPosition(tmp);
+    if (tmp.z > bestZ) { bestZ = tmp.z; best = i; }
+  }
+  if (best !== lastFront) {
+    lastFront = best;
+    if (best >= 0) {
+      const m = markers[best];
+      const la = Math.abs(m.lat).toFixed(2) + "\u00B0 " + (m.lat >= 0 ? "N" : "S");
+      const lo = Math.abs(m.lon).toFixed(2) + "\u00B0 " + (m.lon >= 0 ? "E" : "W");
+      readoutEl.textContent = m.name + "  \u00B7  " + la + "  " + lo;
+    }
+  }
+
+  renderer.render(scene, camera);
+}
+animate();
+</script>
+
+</body>
+</html>
