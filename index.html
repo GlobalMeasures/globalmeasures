@@ -26,7 +26,6 @@ canvas {
   background: #000000;
 }
 
-/* CENTER TEXT */
 .overlay {
   position: fixed;
   inset: 0;
@@ -99,14 +98,26 @@ function init() {
 
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setClearColor(0x000000, 1);
+
   document.getElementById("scene-container").appendChild(renderer.domElement);
 
-  /* LIGHT */
-  const light = new THREE.PointLight(0xd4af37, 2.2);
-  light.position.set(5, 3, 5);
-  scene.add(light);
+  // =========================
+  // LIGHTING FIX (CRITICAL)
+  // =========================
+  const ambient = new THREE.AmbientLight(0xffffff, 1.2);
+  scene.add(ambient);
 
-  /* 🌍 REAL EARTH TEXTURE (KEY UPGRADE) */
+  const sun = new THREE.DirectionalLight(0xffffff, 2.2);
+  sun.position.set(5, 3, 5);
+  scene.add(sun);
+
+  const goldAccent = new THREE.PointLight(0xd4af37, 1.2);
+  goldAccent.position.set(-5, -2, 4);
+  scene.add(goldAccent);
+
+  // =========================
+  // 🌍 EARTH TEXTURE (FIXED VISIBILITY)
+  // =========================
   const geometry = new THREE.SphereGeometry(1, 64, 64);
 
   const texture = new THREE.TextureLoader().load(
@@ -115,18 +126,22 @@ function init() {
 
   const material = new THREE.MeshStandardMaterial({
     map: texture,
-    roughness: 0.9,
-    metalness: 0.1
+    roughness: 0.8,
+    metalness: 0.05,
+    emissive: new THREE.Color(0x111111),   // 🔥 makes land visible
+    emissiveIntensity: 0.6
   });
 
   globe = new THREE.Mesh(geometry, material);
   scene.add(globe);
 
-  /* DOTS (DESTINATIONS) */
+  // =========================
+  // DOTS (DESTINATIONS)
+  // =========================
   dotsGroup = new THREE.Group();
 
   const dotsGeometry = new THREE.BufferGeometry();
-  const dotsCount = 300;
+  const dotsCount = 350;
 
   const positions = [];
 
@@ -149,7 +164,7 @@ function init() {
 
   const dotsMaterial = new THREE.PointsMaterial({
     color: 0xd4af37,
-    size: 0.02
+    size: 0.025
   });
 
   const dots = new THREE.Points(dotsGeometry, dotsMaterial);
