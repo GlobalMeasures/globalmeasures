@@ -6,9 +6,6 @@
 <title>Global Measures</title>
 
 <style>
-/* =========================
-   GLOBAL RESET (CRITICAL)
-========================= */
 html, body {
   margin: 0;
   padding: 0;
@@ -19,25 +16,21 @@ html, body {
   font-family: Arial, sans-serif;
 }
 
-/* prevents any canvas gaps */
 canvas {
   display: block;
 }
 
 /* =========================
-   SCENE CONTAINER
+   SCENE
 ========================= */
 #scene-container {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   background: #000000;
 }
 
 /* =========================
-   CENTER UI OVERLAY
+   TEXT OVERLAY (IMPROVED)
 ========================= */
 .overlay {
   position: fixed;
@@ -52,32 +45,44 @@ canvas {
   pointer-events: none;
 }
 
+/* =========================
+   MAIN TITLE (WIDER / LUXURY FEEL)
+========================= */
 h1 {
   margin: 0;
-  font-weight: 400;
-  letter-spacing: 10px;
+  font-weight: 300;
+  letter-spacing: 0.45em;   /* MUCH WIDER */
+  font-size: 52px;
+  text-transform: uppercase;
+  opacity: 0.95;
+
+  /* subtle glow for depth */
+  text-shadow: 0 0 20px rgba(212,175,55,0.15);
 }
 
+/* =========================
+   SUBTITLE (UPDATED COPY)
+========================= */
 .sub {
-  margin-top: 10px;
-  font-size: 14px;
-  opacity: 0.7;
+  margin-top: 14px;
+  font-size: 15px;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+  max-width: 600px;
+  line-height: 1.6;
 }
 </style>
 </head>
 
 <body>
 
-<!-- 3D SCENE -->
 <div id="scene-container"></div>
 
-<!-- UI -->
 <div class="overlay">
   <h1>GLOBAL MEASURES</h1>
-  <div class="sub">Immersive global food & drink experiences</div>
+  <div class="sub">Immersive Gateway To Authentic Experiences</div>
 </div>
 
-<!-- THREE.JS -->
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 
 <script>
@@ -99,23 +104,15 @@ function init() {
   );
   camera.position.z = 3;
 
-  renderer = new THREE.WebGLRenderer({
-    antialias: true,
-    alpha: true
-  });
-
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setClearColor(0x000000, 1); // HARD BLACK FIX
+  renderer.setClearColor(0x000000, 1);
   document.getElementById("scene-container").appendChild(renderer.domElement);
 
-  // LIGHT
   const light = new THREE.PointLight(0xd4af37, 2);
   light.position.set(5, 3, 5);
   scene.add(light);
 
-  // =========================
-  // GLOBE
-  // =========================
   const geometry = new THREE.SphereGeometry(1, 64, 64);
 
   const material = new THREE.MeshStandardMaterial({
@@ -128,9 +125,6 @@ function init() {
   globe = new THREE.Mesh(geometry, material);
   scene.add(globe);
 
-  // =========================
-  // DOTS (ATTACHED TO GLOBE)
-  // =========================
   dotsGroup = new THREE.Group();
 
   const dotsGeometry = new THREE.BufferGeometry();
